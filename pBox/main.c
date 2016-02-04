@@ -22,7 +22,19 @@ typedef struct Credentials {
 } Credential;
 
 
+// Clears screen by printing a bunch of new lines - doesn't really work well yet
+void ClearWindow() {
     
+    int i;
+    
+    for (i = 0; i < 20; i++) {
+        
+        printf("\n");
+        
+    }
+}
+
+// Checks if the input password has alteast one alphabetic and numerical character
 int AlphanumCheck (char password[64]) {
     
     int i = 0;
@@ -56,7 +68,7 @@ int AlphanumCheck (char password[64]) {
     return check;
 }
 
-
+// authenticates the user
 int PasswordCheck (char password[64], char password_confirm[64]) {
     
     // check if password entries match
@@ -110,61 +122,76 @@ char* CheckLength (char user_input[64]) {
 
 
 // To add user credentials and write them to file
+// if user input is not verified then it re-prompts user
 char AddCredential () {
     
     Credential credential = {0};
     
     char response[3] = {0};
+    char response_exit[3] = {"y\n"};
     
-    printf("Enter the name of the credential (ex: Gmail): ");
-    fgets(credential.name, 64, stdin);
+    while (strcmp(response_exit, "y\n") == 0) {
     
-    CheckLength(credential.name);
+        printf("\nEnter the name of the credential (ex: Gmail): ");
+        fgets(credential.name, 64, stdin);
     
-    printf("Enter the username: ");
-    fgets(credential.username, 64, stdin);
+        CheckLength(credential.name);
     
-    CheckLength(credential.username);
+        printf("Enter the username: ");
+        fgets(credential.username, 64, stdin);
     
-    printf("Enter the password: ");
-    fgets(credential.password, 64, stdin);
+        CheckLength(credential.username);
     
-    CheckLength(credential.password);
+        printf("Enter the password: ");
+        fgets(credential.password, 64, stdin);
     
-    //remove \n
-    credential.name[(strlen(credential.name)) - 1] = '\0';
-    credential.username[(strlen(credential.username)) - 1] = '\0';
-    credential.password[(strlen(credential.password)) - 1] = '\0';
+        CheckLength(credential.password);
     
-    printf("\n\n");
-    printf("+------------------+------------------+------------------+\n");
-    printf("| Name             | Username         | Password         |\n");
-    printf("+------------------+------------------+------------------+\n");
-    printf("| %-16s | %-16s | %-16s |\n", credential.name, credential.username, credential.password);
-    printf("+------------------+------------------+------------------+\n");
+        //remove \n
+        credential.name[(strlen(credential.name)) - 1] = '\0';
+        credential.username[(strlen(credential.username)) - 1] = '\0';
+        credential.password[(strlen(credential.password)) - 1] = '\0';
     
-    printf("\nIs the following information is correct? y/n: ");
-    fgets(response, 3, stdin);
+        printf("\n\n");
+        printf("+------------------+------------------+------------------+\n");
+        printf("| Name             | Username         | Password         |\n");
+        printf("+------------------+------------------+------------------+\n");
+        printf("| %-16s | %-16s | %-16s |\n", credential.name, credential.username, credential.password);
+        printf("+------------------+------------------+------------------+\n");
     
-    if (strcmp(response, "y\n") == 0) {
+        printf("\nIs the following information is correct? y/n: ");
+        fgets(response, 3, stdin);
+    
+        if (strcmp(response, "y\n") == 0) {
+            
+            printf("Are you sure you want to add this credential? y/n: ");
+            fgets(response, 3, stdin);
+            
+            if (strcmp(response, "y\n") == 0) {
       
-       //add \n
-       credential.name[(strlen(credential.name))] = '\n';
-       credential.username[(strlen(credential.username))] = '\n';
-       credential.password[(strlen(credential.password))] = '\n';
+                //add \n
+                credential.name[(strlen(credential.name))] = '\n';
+                credential.username[(strlen(credential.username))] = '\n';
+                credential.password[(strlen(credential.password))] = '\n';
         
-       // create cred file and write user data
-       FILE *filePtr = fopen("pbox_cred.txt", "a");
-       fputs(credential.name, filePtr);
-       fputs(credential.username, filePtr);
-       fputs(credential.password, filePtr);
-       fclose(filePtr);
+                // create cred file and write user data
+                FILE *filePtr = fopen("pbox_cred.txt", "a");
+                fputs(credential.name, filePtr);
+                fputs(credential.username, filePtr);
+                fputs(credential.password, filePtr);
+                fclose(filePtr);
         
-       printf("\nWould you like to add another credential? y/n: ");
-       fgets(response, 3, stdin);
+                printf("\nWould you like to add another credential? y/n: ");
+                fgets(response_exit, 3, stdin);
+            }
+            
+            else {
+                strcpy(response_exit, "n\n");
+            }
+        }
     }
     
-    return response[0];
+    return response_exit[0];
 }
 
 // To check user pass and then allow them to modify and write to config file
@@ -413,6 +440,8 @@ int main(int argc, const char * argv[]) {
                        printf("+--------------------------------------------------------+\n");
                        printf("| v - View credentials                                   |\n");
                        printf("+--------------------------------------------------------+\n");
+                       printf("| r - Remove credentials                                 |\n");
+                       printf("+--------------------------------------------------------+\n");
                        printf("| e - Exit Program                                       |\n");
                        printf("+--------------------------------------------------------+\n\n");
                 
@@ -430,6 +459,7 @@ int main(int argc, const char * argv[]) {
                                
                                response[0] = AddCredential();
                            }
+                           
 
                        }
                 
