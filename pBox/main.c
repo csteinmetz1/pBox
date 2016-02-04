@@ -4,7 +4,7 @@
 //
 //  Created by Christian Steinmetz on 1/23/16.
 //  Copyright (c) 2016 Christian Steinmetz. All rights reserved.
-//
+//  This is an edit to the comment header
 
 #include <stdio.h>
 #include <stdlib.h>
