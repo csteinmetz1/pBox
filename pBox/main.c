@@ -481,6 +481,11 @@ int main(int argc, const char * argv[]) {
                             ViewCredentials();
                        }
                     
+                       else if (strcmp(state, "r") == 0) {
+                           
+                           
+                       }
+                    
                        // Exit
                        else if (strcmp(state, "e") == 0) {
                            
