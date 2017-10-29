@@ -14,29 +14,22 @@
 #include <pwd.h>
 
 typedef struct Credentials {
-    
     char name[64];
     char username[64];
     char password[64];
-
 } Credential;
-
 
 // Clears screen by printing a bunch of new lines - doesn't really work well yet
 void ClearWindow() {
     
-    int i;
-    
-    for (i = 0; i < 20; i++) {
-        
+    int i;  
+    for (i = 0; i < 20; i++) {     
         printf("\n");
-        
     }
 }
 
 // Checks if the input password has alteast one alphabetic and numerical character
 int AlphanumCheck (char password[64]) {
-    
     int i = 0;
     int alpha = 0;
     int num = 0;
@@ -72,31 +65,23 @@ int AlphanumCheck (char password[64]) {
 int PasswordCheck (char password[64], char password_confirm[64]) {
     
     // check if password entries match
-    while ((strcmp(password, password_confirm) != 0) || (strlen(password) < 13) || (AlphanumCheck(password)) == 0) {
-        
+    while ((strcmp(password, password_confirm) != 0) || (strlen(password) < 13) || (AlphanumCheck(password)) == 0) {      
         if (strcmp(password, password_confirm) != 0) {
-            
             printf("\nYour passwords did not match,\n");
-            
             printf("Please re-enter your password: ");
             fgets(password, 64, stdin);
             printf("Confirm your password: ");
             fgets(password_confirm, 64, stdin);
         }
-        
-        else if (strlen(password) < 13) {
-            
+        else if (strlen(password) < 13) {          
             printf("\nYour password was less than 12 characters,\n");
-            
             printf("Please enter another password: ");
             fgets(password, 64, stdin);
             printf("Confirm your password: ");
             fgets(password_confirm, 64, stdin);
         }
         else if (AlphanumCheck(password) == 0) {
-            
             printf("\nYour password did not contain both numbers and letters,\n");
-            
             printf("Please enter another password: ");
             fgets(password, 64, stdin);
             printf("Confirm your password: ");
@@ -108,43 +93,30 @@ int PasswordCheck (char password[64], char password_confirm[64]) {
 
 // To check length of user entires (shall not exceed 16)
 char* CheckLength (char user_input[64]) {
-    
     while (strlen(user_input) > 17) {
-        
         printf("Your input was too long!\nAll inputs must be less than 16 characters.\n");
         printf("Please re-enter your input: ");
-    
         fgets(user_input, 64, stdin);
     }
-              
     return user_input;
 }
 
-
 // To add user credentials and write them to file
 // if user input is not verified then it re-prompts user
-char AddCredential () {
-    
+char AddCredential () {   
     Credential credential = {0};
-    
     char response[3] = {0};
     char response_exit[3] = {"y\n"};
     
     while (strcmp(response_exit, "y\n") == 0) {
-    
         printf("\nEnter the name of the credential (ex: Gmail): ");
         fgets(credential.name, 64, stdin);
-    
         CheckLength(credential.name);
-    
         printf("Enter the username: ");
         fgets(credential.username, 64, stdin);
-    
         CheckLength(credential.username);
-    
         printf("Enter the password: ");
         fgets(credential.password, 64, stdin);
-    
         CheckLength(credential.password);
     
         //remove \n
@@ -163,12 +135,9 @@ char AddCredential () {
         fgets(response, 3, stdin);
     
         if (strcmp(response, "y\n") == 0) {
-            
             printf("Are you sure you want to add this credential? y/n: ");
             fgets(response, 3, stdin);
-            
             if (strcmp(response, "y\n") == 0) {
-      
                 //add \n
                 credential.name[(strlen(credential.name))] = '\n';
                 credential.username[(strlen(credential.username))] = '\n';
@@ -184,20 +153,16 @@ char AddCredential () {
                 printf("\nWould you like to add another credential? y/n: ");
                 fgets(response_exit, 3, stdin);
             }
-            
             else {
                 strcpy(response_exit, "n\n");
             }
         }
     }
-    
     return response_exit[0];
 }
 
 // To check user pass and then allow them to modify and write to config file
 int ChangePassword(char name[64], char password[64]) {
-    
-    
     char user_pass[64] = {0};
     char new_pass[64] = {0};
     char check_pass[64] = {0};
@@ -206,24 +171,19 @@ int ChangePassword(char name[64], char password[64]) {
     fgets(user_pass, 64, stdin);
     
     while (strcmp(user_pass, password) != 0) {
-        
         printf("\nThe password you entered was incorrect!");
         printf("\nPlease re-enter your password: ");
         fgets(user_pass, 64, stdin);
     }
     
     if (strcmp(password,user_pass) == 0) {
-        
         printf("Please enter your new password: ");
         fgets(new_pass, 64, stdin);
         CheckLength(new_pass);
         printf("Please confirm your new password: ");
         fgets(check_pass, 64, stdin);
         
-        
-        
         while (strcmp(new_pass, check_pass) != 0) {
-            
             printf("\nYour passwords did not match!");
             printf("\nPlease enter your new password: ");
             fgets(new_pass, 64, stdin);
@@ -237,17 +197,14 @@ int ChangePassword(char name[64], char password[64]) {
         fputs(name, filePtr);
         fputs(new_pass, filePtr);
         fclose(filePtr);
-        
     }
     return 0;
 }
 
 // reads in credentials and then prints them to terminal
 void ViewCredentials() {
-    
     Credential credential = {0};
     char anykey[3] = {0};
-    
     // open file to read in credentials
     FILE *filePtr = fopen("pbox_cred.txt", "r");
     
@@ -255,12 +212,9 @@ void ViewCredentials() {
     printf("+------------------+------------------+------------------+\n");
     printf("| [Name]           | [Username]       | [Password]       |\n");
     
-    
     while (fgets(credential.name, 64, filePtr) != NULL) {
-        
         fgets(credential.username, 64, filePtr) ;
         fgets(credential.password, 64, filePtr);
-        
         
         credential.name[(strlen(credential.name)) - 1] = '\0';
         credential.username[(strlen(credential.username)) - 1] = '\0';
@@ -268,8 +222,6 @@ void ViewCredentials() {
 
         printf("+------------------+------------------+------------------+\n");
         printf("| %-16s | %-16s | %-16s |\n", credential.name, credential.username, credential.password);
-        
-    
         }
     
     fclose(filePtr);
@@ -281,7 +233,6 @@ void ViewCredentials() {
 
 // to modify any credential stored by the user and save out the new data
 char ModifyCredential() {
-    
     Credential credential = {0};
     Credential new_cred = {0};
     Credential cred_table[100];
@@ -290,7 +241,6 @@ char ModifyCredential() {
     int editnum = 0;
     int i = 1;
     int j = 0;
-
     
     // open file to read in credentials
     FILE *filePtr = fopen("pbox_cred.txt", "r");
@@ -301,7 +251,6 @@ char ModifyCredential() {
     
     // read in the data until end of file
     while (fgets(credential.name, 64, filePtr) != NULL) {
-        
         fgets(credential.username, 64, filePtr) ;
         fgets(credential.password, 64, filePtr);
         
@@ -322,7 +271,6 @@ char ModifyCredential() {
         i++;
         j++;
     }
-    
     
     printf("+-----+------------------------+-------------------------+\n");
     
@@ -363,7 +311,6 @@ char ModifyCredential() {
     fgets(response, 3, stdin);
     
     if (strcmp(response, "y\n") == 0) {
-        
         //add \n
         new_cred.name[(strlen(new_cred.name))] = '\n';
         new_cred.username[(strlen(new_cred.username))] = '\n';
@@ -385,30 +332,21 @@ char ModifyCredential() {
             fputs(cred_table[j].password, filePtr);
             j++;
         }
-     
     fclose(filePtr);
-    
     }
-    
     return response[0];
 }
 
-
 int main(int argc, const char * argv[]) {
-
-
     // Startup Msg - add a fancy asci msg here
     printf("+--------------------------------------------------------+\n");
     printf("|                       pBox v1.0                        |\n");
     printf("+--------------------------------------------------------+\n");
-    
-
    
     // check to see if config file exists, open file and load info
     FILE *filePtr = fopen("pbox_config.txt", "r+");
     
     if (filePtr) {
-        
         char name[64] = {0};
         char pass[64] = {0};
         char user_pass[64] = {0};
@@ -419,16 +357,11 @@ int main(int argc, const char * argv[]) {
         
         // authenticate user
         while (strcmp(pass, user_pass) != 0) {
-            
             printf("Please enter your password: ");
             fgets(user_pass, 64, stdin);
-            
             if (strcmp(pass, user_pass) == 0) {
-                
                 char state[2] = {0};
-        
                 while (strcmp(state, "e") != 0) {
-                
                        printf("\n             Welcome Back to pBox %s\n", name);
                        printf("                What would you like to do?\n");
                        printf("+--------------------------------------------------------+\n");
@@ -444,7 +377,6 @@ int main(int argc, const char * argv[]) {
                        printf("+--------------------------------------------------------+\n");
                        printf("| e - Exit Program                                       |\n");
                        printf("+--------------------------------------------------------+\n\n");
-                
                        fgets(state, 3, stdin);
                 
                        // replace \n with \0
@@ -452,76 +384,44 @@ int main(int argc, const char * argv[]) {
                 
                        // Add credential
                        if (strcmp(state, "a") == 0) {
-                           
                            char response[] = "y";
-                           
                            while (strcmp(response, "y") == 0) {
-                               
                                response[0] = AddCredential();
                            }
-                           
-
                        }
-                
                        // Change password
                        else if (strcmp(state, "c") == 0) {
-                    
                            ChangePassword(name, pass);
                        }
-
                        // Modify credentials
                        else if (strcmp(state, "m") == 0) {
-                           
                            ModifyCredential();
                        }
-                    
                        // View credentials
                        else if (strcmp(state, "v") == 0) {
-                           
                             ViewCredentials();
                        }
-                    
                        else if (strcmp(state, "r") == 0) {
-                           
-                           
                        }
-                    
                        // Exit
                        else if (strcmp(state, "e") == 0) {
-                           
                            printf("Thank you for using pBox.\n");
                            exit(0);
                        }
-                
-                
                 }
-                
             }
-            
-            
             else if (strcmp(pass, user_pass) != 0) {
                   printf("Incorrect Pasword!\n");
             }
-            
-            
         }
-        
-        
-        
-        
-        
-        
     }
     
     // if the file doesnt exist get info from user and write to file (for first time setup)
     else {
-        
         char name[64] = {0};
         char pass[64] = {0};
         char pass_check[64] = {0};
-       
         printf("It seems this is your first time using pBox, we will\nask you some questions to setup your account.\n\n");
-        
         printf("Enter your name: ");
         fgets(name, 64, stdin);
         printf("\n");
@@ -543,12 +443,10 @@ int main(int argc, const char * argv[]) {
     
         // check if password entries match
         PasswordCheck(pass, pass_check);
-        
         char response[] = "n";
         
         // if not then ask user again
         while (strcmp(response, "n") == 0) {
-            
             printf("\n\n");
             printf("+--------------------------------------------------------+\n");
             printf("| Name                                                   |\n");
@@ -568,7 +466,6 @@ int main(int argc, const char * argv[]) {
             
             // and if they answer no then ask them for a new pass and check it
             if (strcmp(response, "n") == 0) {
-                
                 printf("\nEnter your name: ");
                 fgets(name, 64, stdin);
                 printf("\n");
@@ -582,8 +479,6 @@ int main(int argc, const char * argv[]) {
                 PasswordCheck(pass, pass_check);
             }
         }
-        
-        
         
         // this finds the current directory and prints it
         char* cwd;
@@ -604,7 +499,6 @@ int main(int argc, const char * argv[]) {
         printf("Would you like to add credentials to be stored now?\n");
         printf("NOTE: New credentials can always be added at the main menu.\n");
         printf("y/n: ");
-        
         fgets(response, 3, stdin);
         
         // replace \n with NULL
@@ -617,9 +511,7 @@ int main(int argc, const char * argv[]) {
         
         // if answer yes then ask them to enter credentials
         else if (strcmp(response, "y") == 0) {
-            
             while (strcmp(response, "y") == 0) {
-                
                response[0] = AddCredential();
                 
             }
